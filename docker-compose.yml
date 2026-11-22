@@ -4,7 +4,7 @@ services:
   # Backend API
   backend:
     build:
-      context: ./backend
+      context: ./project/backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -15,8 +15,9 @@ services:
       - SECRET_KEY=${SECRET_KEY:-mude-esta-chave-em-producao}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
       - DEBUG=${DEBUG:-true}
+      - STORAGE_DIR=/app/uploads
     volumes:
-      - document_storage:/app/storage
+      - document_storage:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -32,12 +33,12 @@ services:
   # Frontend
   frontend:
     build:
-      context: ./frontend
+      context: ./project/frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:8000/api
+      - VITE_API_URL=http://localhost:8000
       - VITE_SUPABASE_URL=${SUPABASE_URL}
       - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     depends_on:
