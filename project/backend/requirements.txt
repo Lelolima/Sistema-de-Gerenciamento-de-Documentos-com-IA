@@ -1,33 +1,15 @@
-fastapi==0.109.0
-uvicorn[standard]==0.25.0
-python-multipart==0.0.6
-pydantic==2.5.3
-pydantic-settings==2.1.0
-python-dotenv==1.0.0
+# Dependências de execução da API (somente o que o código importa).
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+python-multipart==0.0.34
+pydantic==2.14.4
+python-dotenv==1.2.4
 
 # Processamento de documentos
-PyMuPDF==1.23.8
-python-docx==1.1.0
-pytesseract==0.3.10
-Pillow==10.2.0
+PyMuPDF==1.26.7
+python-docx==1.2.0
+pytesseract==0.3.13
+Pillow==13.0.0
 
-# IA e NLP
-transformers==4.36.2
-torch==2.1.2
-sentence-transformers==2.3.1
-
-# Utilitários
-diff-match-patch==20230430
-httpx==0.26.0
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-
-# Banco de dados
-asyncpg==0.29.0
-SQLAlchemy[asyncio]==2.0.25
-
-# Supabase
-supabase==2.3.4
-
-# Utilitários adicionais
-aiofiles==23.2.1
+# Armazenamento (opcional: usado quando SUPABASE_URL/SUPABASE_KEY estão definidos)
+supabase==2.34.1

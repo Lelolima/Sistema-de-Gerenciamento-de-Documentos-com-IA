@@ -37,3 +37,6 @@ Thumbs.db
 # Environment
 .env.vite
 .env.backend
+# Armazenamento local da API
+project/backend/uploads/
+.venv/

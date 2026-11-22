@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, FileText, X, Loader, Trash2 } from 'lucide-react'
+import { Upload, FileText, Loader, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAppStore } from '../store/appStore'
 import axios from 'axios'

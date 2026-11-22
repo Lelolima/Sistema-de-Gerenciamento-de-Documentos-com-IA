@@ -1,43 +1,56 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test-frontend:
+  frontend:
+    name: Frontend (lint, tipos, testes, build)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
-        working-directory: ./project/frontend
+        working-directory: project/frontend
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '18'
-      - run: npm install
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: project/frontend/package-lock.json
+      - run: npm ci
       - run: npm run lint
+      - run: npx tsc --noEmit
       - run: npm test
+      - run: npm run build
+      - name: npm audit (dependências de produção, nível alto)
+        run: npm audit --omit=dev --audit-level=high
 
-  test-backend:
+  backend:
+    name: Backend (flake8, pytest, pip-audit)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
-        working-directory: ./project/backend
+        working-directory: project/backend
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: pytest
-
-  build:
-    needs: [test-frontend, test-backend]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Docker images
-        run: docker-compose build
+          cache: 'pip'
+          cache-dependency-path: project/backend/requirements*.txt
+      - run: pip install -r requirements-dev.txt pip-audit
+      - run: flake8 --max-line-length=120 main.py services storage utils tests
+      - run: pytest -v
+      - run: pip-audit -r requirements.txt

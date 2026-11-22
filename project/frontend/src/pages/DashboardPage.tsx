@@ -1,4 +1,4 @@
-import { FileText, Upload, Compare, Brain, TrendingUp } from 'lucide-react'
+import { FileText, Upload, GitCompare, Brain, TrendingUp } from 'lucide-react'
 import { useAppStore } from '../store/appStore'
 
 export default function DashboardPage() {
@@ -7,7 +7,7 @@ export default function DashboardPage() {
   const stats = [
     { name: 'Documentos', value: documents.length, icon: FileText, color: 'text-blue-500' },
     { name: 'Processados', value: documents.filter(d => d.processed).length, icon: Brain, color: 'text-green-500' },
-    { name: 'Comparados', value: 0, icon: Compare, color: 'text-purple-500' },
+    { name: 'Comparados', value: 0, icon: GitCompare, color: 'text-purple-500' },
     { name: 'Análises', value: documents.filter(d => d.analysis).length, icon: TrendingUp, color: 'text-orange-500' },
   ]
 

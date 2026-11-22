@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from typing import List
+
 
 class SecurityValidator:
     """Validações de segurança para uploads e entradas"""

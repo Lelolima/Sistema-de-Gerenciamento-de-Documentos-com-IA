@@ -1,6 +1,7 @@
 from typing import Dict, List
 import difflib
 
+
 class DocumentComparator:
     """Comparador de documentos para identificar similaridades e diferenças"""
 

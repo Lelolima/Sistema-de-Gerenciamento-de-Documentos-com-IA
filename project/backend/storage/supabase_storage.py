@@ -5,6 +5,7 @@ from typing import Dict, Optional
 
 load_dotenv()
 
+
 class SupabaseStorage:
     def __init__(self):
         self.supabase_url = os.getenv("SUPABASE_URL")
@@ -13,16 +14,15 @@ class SupabaseStorage:
         self.bucket_name = "documents"
         self._file_cache: Dict[str, str] = {}  # Cache para evitar list() repetido
 
-    async def upload(self, file, doc_id: str) -> str:
+    async def upload(self, content: bytes, filename: str, content_type: str, doc_id: str) -> str:
         """Upload de arquivo para o Supabase Storage"""
-        content = await file.read()
-        file_extension = file.filename.split(".")[-1] if "." in file.filename else "bin"
+        file_extension = filename.split(".")[-1].lower() if "." in filename else "bin"
         file_path = f"{doc_id}.{file_extension}"
 
         self.client.storage.from_(self.bucket_name).upload(
             file_path,
             content,
-            {"content-type": file.content_type}
+            {"content-type": content_type}
         )
 
         # Cache para operações futuras

@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { FileText, Compare, BarChart3, Settings, LogOut, Menu, Sun, Moon, Upload } from 'lucide-react'
+import { FileText, GitCompare, BarChart3, Settings, LogOut, Menu, Sun, Moon, Upload } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useAppStore } from '../store/appStore'
 
@@ -11,7 +11,7 @@ export default function Layout() {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: FileText },
     { name: 'Documentos', href: '/documents', icon: Upload },
-    { name: 'Comparar', href: '/compare', icon: Compare },
+    { name: 'Comparar', href: '/compare', icon: GitCompare },
     { name: 'Análises', href: '/analysis', icon: BarChart3 },
     { name: 'Configurações', href: '/settings', icon: Settings },
   ]
