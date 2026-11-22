@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GitCompare, ArrowRight } from 'lucide-react'
+import { GitCompare } from 'lucide-react'
 import { useAppStore } from '../store/appStore'
 import axios from 'axios'
 
