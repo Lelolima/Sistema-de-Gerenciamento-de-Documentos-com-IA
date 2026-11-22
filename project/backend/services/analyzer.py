@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-import asyncio
+
 
 class TextAnalyzer:
     """Analisador de texto com IA para sentiment analysis, entidades e resumos"""

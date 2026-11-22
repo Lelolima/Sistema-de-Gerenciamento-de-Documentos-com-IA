@@ -4,8 +4,7 @@ import pytesseract
 from PIL import Image
 import io
 from pathlib import Path
-from typing import Optional
-import asyncio
+
 
 class DocumentProcessor:
     """Processador de documentos para extração de texto"""
@@ -33,7 +32,7 @@ class DocumentProcessor:
             for page in doc:
                 text += page.get_text()
             doc.close()
-        except Exception as e:
+        except Exception:
             # Tentar OCR se a extração falhar
             text = await self._extract_from_pdf_ocr(file_path)
         return text

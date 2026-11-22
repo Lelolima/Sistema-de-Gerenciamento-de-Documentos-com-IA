@@ -3,6 +3,7 @@ from services.document_processor import DocumentProcessor
 from services.analyzer import TextAnalyzer
 from services.comparator import DocumentComparator
 
+
 class TestDocumentProcessor:
     @pytest.mark.asyncio
     async def test_extract_text_from_txt(self, tmp_path):
@@ -12,6 +13,7 @@ class TestDocumentProcessor:
 
         text = await processor.extract_text(str(test_file))
         assert text == "Hello World"
+
 
 class TestTextAnalyzer:
     @pytest.mark.asyncio
@@ -32,6 +34,7 @@ class TestTextAnalyzer:
         text = "Contato: email@teste.com em 15/01/2024"
         entities = await analyzer.extract_entities(text)
         assert len(entities) >= 2
+
 
 class TestDocumentComparator:
     @pytest.mark.asyncio
