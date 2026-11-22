@@ -38,42 +38,41 @@ Acompanhe estatísticas e atividade de processamento de documentos.
 
 ---
 
-## 🚀 Funcionalidades
+## 🚀 Funcionalidades (estado real em 2026-11-22)
 
-| Funcionalidade | Descrição |
-|----------------|-----------|
-| **📤 Upload** | Drag-and-drop de PDF, DOCX, TXT, PNG, JPG (máx. 50MB) |
-| **🔍 OCR Avançado** | Extração de texto de documentos digitalizados (Tesseract) |
-| **🧠 Análise IA** | Sentimento, entidades nomeadas e resumos automáticos |
-| **⚖️ Comparação** | Highlight de diferenças lado a lado com % de similaridade |
-| **🔒 Segurança** | Criptografia AES-256, autenticação Supabase, RBAC |
-| **📊 Dashboard** | Estatísticas em tempo real e histórico de processamento |
-| **🔎 Busca Semântica** | Encontre documentos por significado, não apenas palavras |
+| Funcionalidade | Situação |
+|----------------|----------|
+| **📤 Upload** | PDF, DOC/DOCX, TXT, PNG, JPG (máx. 50 MB), com validação de extensão, MIME e tamanho |
+| **🔍 Extração de texto** | PyMuPDF (PDF), python-docx (DOCX), leitura direta (TXT); OCR com Tesseract para imagens e PDFs escaneados — **requer o binário `tesseract` instalado** |
+| **🧠 "Análise IA"** | **Heurística**, não modelo de IA: sentimento por lista de palavras, entidades por regex (datas, e-mails, valores, telefones) e resumo pelas primeiras frases |
+| **⚖️ Comparação** | `difflib`: % de similaridade e lista de diferenças |
+| **📊 Dashboard** | Contagens a partir dos documentos carregados na sessão |
+| **💾 Armazenamento** | Supabase Storage quando `SUPABASE_URL`/`SUPABASE_KEY` estão definidos; caso contrário, disco local (`STORAGE_DIR`). Metadados e texto ficam **em memória** e se perdem ao reiniciar a API |
+
+**Não implementado** (era anunciado anteriormente): criptografia AES-256, RBAC, rate limiting
+ativo, conformidade LGPD/GDPR, busca semântica, uso de Transformers. A API **não exige
+autenticação** — o login do frontend (Supabase Auth) não é verificado pelo backend.
 
 ---
 
 ## 📋 Requisitos
 
-- Node.js 18+
+- Node.js 20+
 - Python 3.11+
-- Docker (opcional, para containerização)
-- Conta Supabase (gratuita)
+- Tesseract OCR (opcional, só para imagens/PDFs escaneados)
+- Docker (opcional)
+- Supabase (opcional: storage e login do frontend)
 
 ---
 
 ## 🛠️ Instalação
 
-### Opção 1: Docker (Recomendado)
+### Opção 1: Docker
 
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/docmanager-ia.git
-cd docmanager-ia
-
-# Suba todos os serviços
-docker-compose up -d
-
-# Acesse http://localhost:3000
+cp project/backend/.env.example .env   # ajuste SECRET_KEY/POSTGRES_PASSWORD se usar
+docker compose up -d --build
+# Frontend: http://localhost:3000 · API: http://localhost:8000/docs
 ```
 
 ### Opção 2: Manual
@@ -82,24 +81,34 @@ docker-compose up -d
 
 ```bash
 cd project/backend
-python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
-pip install -r requirements.txt
-cp .env.example .env
-# Edite .env com suas credenciais do Supabase
-python -m uvicorn main:app --reload
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+source .venv/bin/activate     # Linux/Mac
+pip install -r requirements-dev.txt   # ou requirements.txt só para executar
+cp .env.example .env                  # opcional
+uvicorn main:app --reload             # http://localhost:8000
 ```
 
 #### Frontend
 
 ```bash
 cd project/frontend
-npm install
-cp .env.example .env
-# Edite .env com suas credenciais do Supabase
-npm run dev
+npm ci
+cp .env.example .env    # VITE_API_URL=http://localhost:8000
+npm run dev             # http://localhost:3000
 ```
+
+### Variáveis de ambiente
+
+| Variável | Onde | Padrão | Uso |
+|----------|------|--------|-----|
+| `ALLOWED_ORIGINS` | backend | `http://localhost:3000` | CORS (lista separada por vírgula) |
+| `SUPABASE_URL`, `SUPABASE_KEY` | backend | vazio | Ativa Supabase Storage (bucket `documents`) |
+| `STORAGE_DIR` | backend | `uploads` | Pasta do armazenamento local |
+| `VITE_API_URL` | frontend | — | URL base da API (sem `/api`) |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | frontend | — | Login via Supabase Auth |
+
+As demais variáveis de `.env.example` (`DATABASE_URL`, `SECRET_KEY`, …) ainda não são lidas pelo código.
 
 ---
 
@@ -129,7 +138,7 @@ npm run dev
 | **Frontend** | React 18, Vite, TypeScript, TailwindCSS, Zustand |
 | **Backend** | FastAPI, Python 3.11, Pydantic |
 | **OCR** | Tesseract, PyMuPDF |
-| **IA/NLP** | Transformers, difflib |
+| **"IA"/NLP** | Heurísticas (regex, listas de palavras), difflib |
 | **Storage** | Supabase, PostgreSQL |
 | **DevOps** | Docker, Docker Compose, GitHub Actions |
 
@@ -147,13 +156,9 @@ npm run dev
 
 ## 🔒 Segurança
 
-- ✅ Criptografia AES-256 para documentos sensíveis
-- ✅ Autenticação via Supabase Auth com RBAC
-- ✅ Conformidade LGPD/GDPR
-- ✅ Rate limiting na API
-- ✅ Validação de tipo e tamanho de arquivo
-- ✅ Sanitização de nomes de arquivo
-- ✅ CORS configurável por ambiente
+Implementado: validação de extensão/MIME/tamanho, sanitização de nome de arquivo (anti path traversal), CORS configurável.
+
+Pendente (decisão do dono): autenticação/autorização nos endpoints da API, persistência dos metadados em banco, rate limiting.
 
 ---
 
@@ -162,12 +167,15 @@ npm run dev
 ```bash
 # Frontend
 cd project/frontend
-npm test
+npm run lint && npx tsc --noEmit && npm test && npm run build
 
 # Backend
 cd project/backend
+flake8 --max-line-length=120 main.py services storage utils tests
 pytest
 ```
+
+O CI (`.github/workflows/ci.yml`) executa esses mesmos passos.
 
 ---
 
